@@ -276,7 +276,11 @@ default_t	defaults[] =
     {"joyb_use",&joybuse,3},
     {"joyb_speed",&joybspeed,2},
 
+#ifdef OLED_HEIGHT
+    {"screenblocks",&screenblocks, 11},
+#else
     {"screenblocks",&screenblocks, 10},
+#endif
     {"detaillevel",&detailLevel, 0},
 
     {"snd_channels",&numChannels, 3},
@@ -531,5 +535,4 @@ void M_ScreenShot (void)
 	
     players[consoleplayer].message = "screen shot";
 }
-
 

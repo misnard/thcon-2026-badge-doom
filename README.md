@@ -54,7 +54,8 @@ Controls:
 - `F`: fire
 - `E`: use/open
 - `Enter` / `Esc`: menus
-- `m`: cycle render mode
+- `G`: cycle OLED gamma
+- `m`: cycle OLED render mode
 - `[` / `]`: shift render Y offset
 - `Ctrl-]`: quit the relay
 
@@ -71,6 +72,10 @@ Controls:
 This project is based on
 [cnlohr/embeddedDOOM](https://github.com/cnlohr/embeddedDOOM), a memory-focused
 embedded port of the DOOM source code.
+
+The OLED grayscale, gamma, and dithering work was informed by
+[DOOM on a watch](https://jborza.com/post/2020-11-20-doom-on-a-watch/) by
+Juraj Borza.
 
 embeddedDOOM itself is derived from the id Software DOOM source release and uses
 DOOM shareware data. The id Software limited-use license text is included in

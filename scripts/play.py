@@ -12,7 +12,8 @@ Controls:
   F             fire
   E             use / open
   Enter / Esc   menus
-  m             cycle render mode (badge-side)
+  G             cycle OLED gamma
+  m             cycle OLED render mode
   [   ]         shift render Y offset
   Ctrl-]        quit relay (does not reach badge)
 
