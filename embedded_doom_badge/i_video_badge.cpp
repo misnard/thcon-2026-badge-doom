@@ -26,6 +26,10 @@ extern "C" {
 #define OLED_AREA_SAMPLE 1
 #endif
 
+#ifndef OLED_WHITE_CUTOFF
+#define OLED_WHITE_CUTOFF 160
+#endif
+
 static constexpr int OLED_W = OLED_WIDTH;
 static constexpr int OLED_H = OLED_HEIGHT;
 static_assert(OLED_W == 128, "SSD1306 badge driver expects a 128-pixel-wide panel");
@@ -323,18 +327,23 @@ static int scaledLumaAt(const byte *screen, const SourceRect &rect, int x, int y
 }
 #endif
 
-static void renderFrameToOled() {
+static bool ditheredPixelIsOn(int lum, int x, int y) {
   static const uint8_t bayer8[8][8] = {
-    { 0, 32,  8, 40,  2, 34, 10, 42},
-    {48, 16, 56, 24, 50, 18, 58, 26},
-    {12, 44,  4, 36, 14, 46,  6, 38},
-    {60, 28, 52, 20, 62, 30, 54, 22},
-    { 3, 35, 11, 43,  1, 33,  9, 41},
-    {51, 19, 59, 27, 49, 17, 57, 25},
-    {15, 47,  7, 39, 13, 45,  5, 37},
-    {63, 31, 55, 23, 61, 29, 53, 21}
+    { 1, 49, 13, 61,  4, 52, 16, 64},
+    {33, 17, 45, 29, 36, 20, 48, 32},
+    { 9, 57,  5, 53, 12, 60,  8, 56},
+    {41, 25, 37, 21, 44, 28, 40, 24},
+    { 3, 51, 15, 63,  2, 50, 14, 62},
+    {25, 19, 47, 31, 34, 18, 46, 30},
+    {11, 59,  7, 55, 10, 58,  6, 54},
+    {43, 27, 39, 23, 42, 26, 38, 22}
   };
 
+  int boosted = lum + (lum * bayer8[y & 7][x & 7]) / 64;
+  return boosted >= OLED_WHITE_CUTOFF;
+}
+
+static void renderFrameToOled() {
   memset(fb, 0, sizeof(fb));
   const byte *screen = screens[0];
   SourceRect rect = sourceRectForMode(effectiveRenderMode());
@@ -342,8 +351,7 @@ static void renderFrameToOled() {
   for (int y = 0; y < OLED_H; ++y) {
     for (int x = 0; x < OLED_W; ++x) {
       int lum = scaledLumaAt(screen, rect, x, y);
-      int threshold = bayer8[y & 7][x & 7] * 4 + 2;
-      px(x, y, lum > threshold);
+      px(x, y, ditheredPixelIsOn(lum, x, y));
     }
   }
 }
